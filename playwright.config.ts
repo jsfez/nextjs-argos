@@ -20,14 +20,24 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: [
+    ["list"],
+    [
+      "@argos-ci/playwright/reporter",
+      {
+        // Enable upload to Argos only when it runs on CI.
+        uploadToArgos: !!process.env.CI,
+        // Set your Argos token (required only if you don't use GitHub Actions).
+        token: "<YOUR-ARGOS-TOKEN>",
+      },
+    ],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry",
+    // Setting to capture screenshot only when a test fails.
+    screenshot: "only-on-failure",
+    // Setting to retain traces only when a test fails.
+    trace: "retain-on-failure",
   },
 
   /* Configure projects for major browsers */
